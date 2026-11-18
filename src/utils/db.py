@@ -1,0 +1,19 @@
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+from src.utils.settings import settings
+
+Base = declarative_base()
+engine = create_engine(settings.DB_CONNECTION)
+
+localSession = sessionmaker(
+    bind=engine,
+    autoflush=False
+)
+
+def get_db():
+    session = localSession()  # Attention aux parenthèses !
+
+    try:
+        yield session
+    finally:
+        session.close()
