@@ -13,15 +13,15 @@ def create_tasks(body:TaskSchema, db:Session):
     db.commit()
     db.refresh(new_task)
 
-    return {"status":"Task Created Successfully","data":new_task}
-
+    return new_task
 
 def get_task(db:Session):
     tasks = db.query(TaskModel).all()
 
-    return {
-        "status":"All Tasks","data":tasks
-    }
+    #return {
+    #    "status":"All Tasks","data":tasks
+    #}
+    return tasks
 
 
 def get_one_task(task_id:int, db:Session):
@@ -32,9 +32,10 @@ def get_one_task(task_id:int, db:Session):
         raise HTTPException(404, detail="Task ID is Incorrect")
 
 
-    return {
-        "status":"Task Fetched Successfully","data":one_task
-    }
+    #return {
+    #    "status":"Task Fetched Successfully","data":one_task
+    #}
+    return one_task
 
 
 def update_task(body:TaskSchema, task_id:int, db:Session):
@@ -58,9 +59,11 @@ def update_task(body:TaskSchema, task_id:int, db:Session):
     db.commit()
     db.refresh(one_task)
 
-    return {
-            "status": HTTPException(200,detail="Task Fetched Successfully"),"data":one_task
-        }
+    #return {
+    #        "status": HTTPException(200,detail="Task Fetched Successfully"),"data":one_task
+    #    }
+
+    return one_task
 
 
 def  delete_task(task_id:int, db:Session):
@@ -72,9 +75,10 @@ def  delete_task(task_id:int, db:Session):
     db.delete(one_task)
     db.commit()
 
-    return {
-        "status":HTTPException(200,detail="Task deleted Successfully"),
-        "data":one_task
-    }
+    #return {
+    #    "status":"Task deleted Successfully",
+    #    "data":one_task
+    #}
+    return None
 
 
