@@ -2,10 +2,16 @@
 from src.user.dtos import UserSchema, LoginSchema
 from sqlalchemy.orm import Session
 from src.user.models import UserModel
-from fastapi import HTTPException,Depends,status
+from fastapi import HTTPException,Depends,status,Request
 from pwdlib import PasswordHash
+from src.utils.settings import settings
+import jwt
+from datetime import datetime, timedelta
+
 
 password_hash = PasswordHash.recommended()
+
+
 def get_password_hash(password):
     return password_hash.hash(password)
 
@@ -50,4 +56,17 @@ def login_user(body:LoginSchema, db:Session):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="You Entered Wrong Username")
 
 
-    return "login Done"
+    exp_time = datetime.now() + timedelta(minutes=settings.EXP_TIME)
+
+    print(exp_time)
+    token = jwt.encode({"_id":user.id, "exp":exp_time},settings.SECRET_KEY, settings.ALGORITHM)
+
+
+    return {"token":token}
+
+
+## TOKEN Send -
+def is_authenticated(request:Request, db:Session):
+    print(request)
+
+    return {"Done":"seccussfully"}
