@@ -7,6 +7,9 @@ from pwdlib import PasswordHash
 from src.utils.settings import settings
 import jwt
 from datetime import datetime, timedelta
+from jwt.exceptions import InvalidTokenError
+
+ 
 
 
 password_hash = PasswordHash.recommended()
@@ -67,6 +70,26 @@ def login_user(body:LoginSchema, db:Session):
 
 ## TOKEN Send -
 def is_authenticated(request:Request, db:Session):
-    print(request)
 
-    return {"Done":"seccussfully"}
+    try:
+        token = request.headers.get("authorization")
+
+        if not token:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="unauthorized")
+        
+        token = token.split(" ")[-1]
+
+        data = jwt.decode(token,settings.SECRET_KEY,settings.ALGORITHM)
+        user_id = data.get("_id")
+
+
+        user = db.query(UserModel).filter(UserModel.id == user_id).first()
+
+        if not user:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="You are unauthorized")
+
+        return user
+    except InvalidTokenError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="You are unauthorized")
+
+        
