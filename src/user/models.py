@@ -3,7 +3,7 @@ from src.utils.db import Base
 
 
 class UserModel(Base):
-    __tablename__ = "user"
+    __tablename__ = "user_table"
 
     id = Column(Integer, primary_key=True)
     name = Column(String(150))

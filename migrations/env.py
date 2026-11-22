@@ -6,7 +6,6 @@ from src.utils.settings import settings
 from src.user.models import UserModel
 from src.tasks.models import TaskModel
 from src.utils.db import Base
-
 from alembic import context
 
 # this is the Alembic Config object, which provides
