@@ -2,12 +2,13 @@
 from src.user.dtos import UserSchema, LoginSchema
 from sqlalchemy.orm import Session
 from src.user.models import UserModel
-from fastapi import HTTPException,Depends,status,Request
+from fastapi import HTTPException,Depends,status,Request,BackgroundTasks
 from pwdlib import PasswordHash
 from src.utils.settings import settings
 import jwt
 from datetime import datetime, timedelta
 from jwt.exceptions import InvalidTokenError
+from src.utils.mail import send_mail
 
  
 
@@ -21,7 +22,7 @@ def get_password_hash(password):
 def verify_password(plain_password, hashed_password):
     return password_hash.verify(plain_password,hashed_password)
 
-def register(body:UserSchema, db:Session):
+async def register(body:UserSchema, db:Session,bg_task:BackgroundTasks):
 
     ## 1. username validations
     ## 2. Email validations
@@ -45,6 +46,11 @@ def register(body:UserSchema, db:Session):
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+
+    ## send email confirmation
+    #res = send_mail([new_user.email])
+
+    bg_task.add_task(send_mail,[new_user.email])
 
     return new_user 
 
